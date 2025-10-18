@@ -14,15 +14,41 @@
     
     <!-- Join Waitlist Button -->
     <button id="joinButton" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">Join Waitlist</button>
+    
 
     <!-- Hidden Role Selector -->
-    <div id="roleSelector" class="hidden mt-4 flex flex-col sm:flex-row gap-3">
-      <button class="bg-green-600 text-white px-5 py-3 rounded-lg hover:bg-green-700 transition">I'm a Student</button>
-      <button class="bg-purple-600 text-white px-5 py-3 rounded-lg hover:bg-purple-700 transition">I'm a Homeowner</button>
-    </div>
+<div id="roleSelector" class="hidden mt-4 flex flex-col sm:flex-row gap-3">
+  <button id="studentBtn" class="bg-green-600 text-white px-5 py-3 rounded-lg hover:bg-green-700 transition">I'm a Student</button>
+  <button id="homeownerBtn" class="bg-purple-600 text-white px-5 py-3 rounded-lg hover:bg-purple-700 transition">I'm a Homeowner</button>
+</div>
 
-    <p class="text-sm text-gray-500 mt-3">Launching soon • Be the first to get early access</p>
-  </section>
+<!-- Hidden Email Form -->
+<form
+  id="emailForm"
+  class="hidden mt-4 flex flex-col sm:flex-row gap-2 w-full max-w-md"
+  method="POST"
+  action="https://formspree.io/f/xanpvrzq"
+>
+  <input type="hidden" name="role" id="roleInput" value="" />
+  <input
+    type="email"
+    name="email"
+    placeholder="Enter your email"
+    required
+    class="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  <button
+    type="submit"
+    class="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition"
+  >
+    Submit
+  </button>
+</form>
+
+<p id="successMessage" class="hidden mt-4 text-green-600 font-semibold">
+  ✅ Thank you for joining the waitlist!
+</p>
+
 
   <!-- How It Works -->
   <section class="bg-white py-16">
@@ -55,12 +81,51 @@
   </footer>
 
   <script>
-    const joinButton = document.getElementById('joinButton');
-    const roleSelector = document.getElementById('roleSelector');
+  const joinButton = document.getElementById("joinButton");
+  const roleSelector = document.getElementById("roleSelector");
+  const emailForm = document.getElementById("emailForm");
+  const roleInput = document.getElementById("roleInput");
+  const successMessage = document.getElementById("successMessage");
 
-    joinButton.addEventListener('click', () => {
-      roleSelector.classList.toggle('hidden');
-    });
-  </script>
+  joinButton.addEventListener("click", () => {
+    roleSelector.classList.toggle("hidden");
+    successMessage.classList.add("hidden");
+  });
+
+  document.getElementById("studentBtn").addEventListener("click", () => {
+    roleInput.value = "Student";
+    emailForm.classList.remove("hidden");
+    successMessage.classList.add("hidden");
+  });
+
+  document.getElementById("homeownerBtn").addEventListener("click", () => {
+    roleInput.value = "Homeowner";
+    emailForm.classList.remove("hidden");
+    successMessage.classList.add("hidden");
+  });
+
+  emailForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(emailForm);
+
+    fetch(emailForm.action, {
+      method: "POST",
+      body: formData,
+      headers: { Accept: "application/json" },
+    })
+      .then((response) => {
+        if (response.ok) {
+          emailForm.reset();
+          emailForm.classList.add("hidden");
+          roleSelector.classList.add("hidden");
+          successMessage.classList.remove("hidden");
+        } else {
+          alert("Error submitting form. Try again.");
+        }
+      })
+      .catch(() => alert("Network error. Try again."));
+  });
+</script>
+
 </body>
 </html>
